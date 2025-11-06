@@ -1,20 +1,18 @@
-# Build outputs
+# Build artifacts
 build/
 
 # macOS
 .DS_Store
 
-# Python
+# Node/Python common
+node_modules/
 .venv/
+venv/
 __pycache__/
 
-# Node
-node_modules/
-
-# Editor
+# Editors
 .vscode/
 .idea/
 
-# Misc
-*.log
-
+# Secrets
+.env

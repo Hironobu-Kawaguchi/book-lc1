@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Markdown-to-EPUB book publishing template for Kindle (KDP) that uses Pandoc and GitHub Actions following a Docs-as-Code approach. Authors write in GFM (GitHub Flavored Markdown) with a "one sentence per line" convention to make Git diffs more readable. The build process sanitizes TODO comments, generates EPUB3 files with custom CSS styling, and can automatically publish to GitHub Releases.
+This is a bilingual (Japanese content, English tooling) Markdown-to-EPUB book publishing project for Kindle (KDP) that uses Pandoc and GitHub Actions following a Docs-as-Code approach. The book covers practical implementation of LLM agents and RAG systems using LangGraph 1.0 and LangChain 1.0, with tutorial code included in `tutorial/`.
+
+Authors write manuscripts in GFM (GitHub Flavored Markdown) with a "one sentence per line" convention to make Git diffs more readable. The build process sanitizes TODO comments, generates EPUB3 files with custom CSS styling optimized for Japanese typography, and can automatically publish to GitHub Releases.
 
 ## Build Commands
 
@@ -46,13 +48,17 @@ Open `build/book.epub` in an EPUB viewer (e.g., Apple Books, Calibre) and verify
 ## Repository Structure
 
 ```
-manuscript/           # Book chapters (numbered 00-, 01-, etc.)
+manuscript/           # Book chapters in Japanese (numbered 00-, 01-, 02-, etc.)
 images/              # Figures and cover (Git LFS managed)
+tutorial/            # Tutorial Python code (uv-managed)
+  ├─ examples/       # Runnable example scripts
+  ├─ src/            # Shared modules
+  └─ pyproject.toml  # uv/PEP 621 dependencies
 scripts/             # Build utilities (sanitize_manuscript.sh)
 build/               # Generated artifacts (gitignored)
 .github/workflows/   # CI automation (build.yml, release.yml)
-metadata.yml         # Book metadata (title, author, lang, cover)
-epub.css             # EPUB styling
+metadata.yml         # Book metadata (title, author, lang=ja, cover)
+epub.css             # EPUB styling (Japanese typography optimized)
 Makefile             # Build commands
 ```
 
@@ -76,9 +82,9 @@ Makefile             # Build commands
 ## CI/CD Workflows
 
 **Continuous build (`.github/workflows/build.yml`):**
-- Triggered on push to `main`
+- Triggered on every push and pull request
+- Runs on `ubuntu-latest` with apt-installed Pandoc
 - Builds EPUB and uploads as GitHub Actions artifact
-- Uses `pandoc/core:3.8` Docker image
 
 **Release publishing (`.github/workflows/release.yml`):**
 - Triggered when pushing tags matching `v*` pattern
@@ -109,6 +115,51 @@ Then add images normally - they will be automatically tracked by LFS according t
 - TOC: Automatically generated with `--toc` flag
 
 **Sanitization:** The sanitize script uses BSD-compatible sed to remove lines matching `^\s*TODO(\s|\[|:)` before building, allowing authors to leave WIP notes that won't appear in the final EPUB.
+
+## Tutorial Code Development
+
+Tutorial code lives in `tutorial/` and uses `uv` for Python dependency management.
+
+**Setup:**
+```bash
+cd tutorial
+brew install uv  # if not already installed
+uv python install 3.12
+uv venv -p 3.12
+source .venv/bin/activate
+uv sync
+```
+
+**Run examples:**
+```bash
+# From tutorial/ directory
+uv run python examples/level1_graph_greeting.py
+uv run python examples/level1_agent_faq.py
+```
+
+**Add dependencies:**
+```bash
+cd tutorial
+uv add langchain-openai  # example
+```
+
+**Run tests (when available):**
+```bash
+cd tutorial
+uv run pytest
+```
+
+**Linting:**
+```bash
+cd tutorial
+uv run ruff check .
+uv run ruff format .
+```
+
+**Tutorial structure:**
+- `tutorial/ch04/`: LangGraph 基礎サンプル
+- `tutorial/ch05/`: LangChain v1 チュートリアル群
+- `tutorial/pyproject.toml`: Declares dependencies (langgraph, langchain, python-dotenv, etc.)
 
 ## KDP Publishing
 

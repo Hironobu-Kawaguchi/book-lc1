@@ -1,2 +1,3 @@
-# 画像をこのディレクトリに追加してください。
-# 大容量の画像は Git LFS で追跡されます。
+version https://git-lfs.github.com/spec/v1
+oid sha256:b69cc7ef70f8bee34809e60c2e12b41c5d035cb1afe0b526ce9376811aa503b0
+size 123

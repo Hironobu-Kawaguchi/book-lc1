@@ -1,20 +1,19 @@
-.PHONY: build clean sanitize
+PANDOC ?= pandoc
+OUT_DIR := build
+SANITIZED_DIR := $(OUT_DIR)/sanitized
+OUT := $(OUT_DIR)/book.epub
 
-SANITIZED_DIR=build/sanitized
+.PHONY: build clean
 
-sanitize:
-	bash scripts/sanitize_manuscript.sh
+build: $(OUT)
 
-build: sanitize
-	pandoc \
-		--from=gfm \
-		--standalone \
-		--metadata-file=metadata.yml \
-		--output=build/book.epub \
-		--toc \
-		--css=epub.css \
-		--syntax-highlighting=kate \
-		$(SANITIZED_DIR)/*.md
+$(OUT): metadata.yml epub.css $(wildcard manuscript/*.md) scripts/sanitize_manuscript.sh
+	@bash scripts/sanitize_manuscript.sh
+	@$(PANDOC) --from=gfm --standalone \
+	  --metadata-file=metadata.yml --css=epub.css \
+	  --syntax-highlighting=kate --toc -o $(OUT) $(SANITIZED_DIR)/*.md
+	@echo "\n✓ Built $(OUT)"
 
 clean:
-	rm -rf build
+	rm -rf $(OUT_DIR)
+

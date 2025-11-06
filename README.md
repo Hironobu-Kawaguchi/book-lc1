@@ -1,112 +1,97 @@
-# Kindle 向け Markdown/Pandoc 執筆テンプレート
+# エージェント＆RAG時代の実践 — 原稿レポジトリ
 
-GitHub と Pandoc を用いて、Markdown 原稿から高品質な EPUB3 をビルドし、GitHub Actions で自動化・配布（Releases）するためのテンプレートです。
+このレポジトリは書籍原稿とビルド周りに加えてチュートリアル用のコードを `tutorial/` 配下で管理します。
 
-## リポジトリ構成
+## 構成
 
 ```
 .
-├─ .github/workflows/
-│  ├─ build.yml          # main への push で EPUB を自動ビルド
-│  └─ release.yml        # v* タグ push で Release に EPUB を添付
-├─ manuscript/           # 原稿（1 文 1 行推奨）
-│  ├─ 00-frontmatter.md
-│  ├─ 01-introduction.md
-│  └─ 02-chapter-one.md
-├─ images/               # 図版・表紙（Git LFS 管理推奨）
-├─ build/                # ビルド成果物（.gitignore 済み）
-├─ metadata.yml          # 書籍メタデータ（title, author, lang 等）
-├─ epub.css              # EPUB 用カスタム CSS
-├─ .gitattributes        # 画像などを Git LFS で追跡
-├─ .gitignore
+├─ manuscript/           # 原稿（章ごと、1文1行）
+├─ images/               # 図版・表紙（Git LFS 管理）
+├─ scripts/              # 補助スクリプト（sanitize 等）
+├─ build/                # 生成物（.gitignore 済み）
+├─ .github/workflows/    # CI（build.yml / release.yml）
+├─ metadata.yml          # 書籍メタデータ（title/author/lang）
+├─ epub.css              # EPUB スタイル
+├─ Makefile              # ローカルビルド入口
 └─ README.md
 ```
 
-## ワークフロー概要
+## 事前準備（原稿ビルド）
 
-- Docs-as-Code 方針で原稿を Markdown（GFM）で管理
-- Pandoc で EPUB3 を生成（`epub.css` を適用）
-- GitHub Actions で CI ビルド（push 時に artifact として EPUB を保存）
-- タグ `v*` を push すると GitHub Releases に EPUB を自動添付
+- macOS: `brew install pandoc`
+- コードレポの環境構築は `uv` 前提です（Poetry/Dockerは使用しません）。
+- 他OS: Pandoc をインストールしてください。
 
-## 1 文 1 行（One Sentence Per Line）
-
-Git の diff を読みやすくするため、散文でも「1 文 1 行」を徹底してください。レビュー効率が飛躍的に向上します。
-
-## 画像と Git LFS
-
-大きな画像はリポジトリを肥大化させます。以下の設定を済ませてから画像を追加してください。
-
-```bash
-brew install git-lfs           # 未インストールの場合
-git lfs install
-# 追跡ルールは .gitattributes に用意済み（jpg / png / svg / gif）
-```
-
-## メタデータと表紙
-
-- `metadata.yml` を編集して、`title`、`author`、`lang` 等を設定
-- 表紙を用意したら `images/cover.jpg` を追加し、`metadata.yml` の `cover-image` を有効化
-
-## ローカルビルド
-
-事前に Pandoc をインストールしてください（例：`brew install pandoc`）。
-
-```bash
-# 1) 中間ディレクトリと成果物ディレクトリを作成
-mkdir -p build/sanitized
-
-# 2) TODO 行の除去（WIP メモをビルドから除外）
-bash scripts/sanitize_manuscript.sh
-
-# 3) Pandoc で EPUB を生成
-pandoc \
-  --from=gfm \
-  --standalone \
-  --metadata-file=metadata.yml \
-  --output=build/book.epub \
-  --toc \
-  --css=epub.css \
-  --syntax-highlighting=kate \
-  build/sanitized/*.md
-```
-
-または Makefile を使う場合：
+## ビルド
 
 ```bash
 make build
 ```
 
-## GitHub Actions
+実行内容: `scripts/sanitize_manuscript.sh` で TODO 行を除去 → Pandoc で `build/book.epub` を生成します。
 
-- `build.yml`: `main` への push で自動ビルドし、Actions の artifact に `book.epub` を保存
-- `release.yml`: `v*` タグの push をトリガーにビルドし、対応する GitHub Release に `book.epub` を添付
-
-## KDP へのアップロード
-
-KDP は EPUB の手動アップロードのみをサポートします。出版時は GitHub Releases から最新版の `book.epub` をダウンロードし、KDP の Bookshelf からアップロードしてください。
-
-## ライティング TIPS
-
-- GFM 記法を基本に、見出しは章先頭を `#`、節は `##` として階層化
-- 各章ファイルは `00-`, `01-` のような番号付き接頭辞で順序を安定化
-- 画像は `images/` に置き、本文から相対パスで参照（例：`![図1](images/ch01-diagram.png)`）
-
-## タグ付けとリリース
+手動ビルド例:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+bash scripts/sanitize_manuscript.sh
+pandoc --from=gfm --standalone \
+  --metadata-file=metadata.yml --css=epub.css \
+  --syntax-highlighting=kate --toc -o build/book.epub build/sanitized/*.md
 ```
 
-数十秒後に GitHub の Releases ページに `book.epub` が添付されます。
+## チュートリアルコードの環境（uv）
+
+チュートリアルコードは `tutorial/` ディレクトリ配下にあります。
+uv を使い、`tutorial/` 内で仮想環境と依存関係をセットアップします。
+
+例（`tutorial/` で実行）:
+
+```bash
+# uv の導入（macOS/Homebrew）
+brew install uv
+
+# Python 3.12 系を用意（任意。ローカルに無ければ）
+uv python install 3.12
+
+# 仮想環境を作成して有効化
+uv venv -p 3.12
+source .venv/bin/activate
+
+# 依存解決（pyproject.toml がある前提）
+uv sync
+```
+
+サンプルの実行例:
+
+```bash
+# API キー設定（初回のみ）
+cp .env.sample .env && $EDITOR .env
+
+# LangGraph の最小例（第4章）
+uv run python ch04/level1_graph_greeting.py
+
+# LangChain の最小エージェント例（第5章、APIキーで自動選択）
+uv run python ch05/level1_agent_faq.py
+
+# LangChain: Middleware でPIIマスク
+uv run python ch05/level2_agent_middleware.py
+
+# LangChain: ToolStrategyで構造化レスポンス
+uv run python ch05/level2_agent_structured_output.py
+
+# LangChain: content_blocks を確認
+uv run python ch05/feature_content_blocks.py
+```
+```
 
 ## ライセンス
 
-本リポジトリはデュアルライセンスです。
+- コード: MIT（`LICENSE`）
+- コンテンツ: CC BY 4.0（`LICENSE-CONTENT`）
 
-- コード（`scripts/`, `.github/`, `Makefile`, `epub.css` など）: MIT License（`LICENSE`）
-- コンテンツ（`manuscript/` の本文、`images/` の画像）: CC BY 4.0（`LICENSE-CONTENT`）
-- 例外素材やクレジットは `ATTRIBUTIONS.md` に記載します。
+## ガイドライン（抜粋）
 
-KDPで販売するEPUBの販売権は著者に帰属します（リポジトリの公開ライセンスとは独立）。
+- Prose: 1文1行。
+- 章ファイルは `00-`, `01-` の番号接頭辞で順序固定。
+- 画像は `images/` に配置し、必要に応じて LFS 管理。

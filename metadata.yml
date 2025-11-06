@@ -1,25 +1,17 @@
-# 書籍メタデータ（必要に応じて編集）
-# KDP は EPUB 内のメタデータを解釈します。
-# まずは最低限のフィールドから始め、後で拡張してください。
-
-title: "あなたの本のタイトル"
-subtitle: "サブタイトル（任意）"
+title: "エージェント＆RAG時代の実践 ― LangGraph 1.0 ＋ LangChain 1.0 実装ガイド"
 author:
-  - name: "著者名"
-    # email: "author@example.com"  # 任意
-lang: ja-JP
-publisher: "パブリッシャー名（任意）"
-date: "2025-11-06"
-rights: "© 2025 著者名 — Text: CC BY 4.0, Code: MIT"
+  - name: 著者名（仮）
+lang: ja
+date: 2025-11-06
+rights: "© 2025 著者名（仮）. Some Rights Reserved."
 description: |
-  本書は、GitHub と Pandoc を活用して Kindle 向けに
-  プレーンテキスト（Markdown）から高品質な EPUB3 をビルドする
-  実践ガイドです。
+  エージェント型アプリケーションとRAGの設計と実装を、LangGraph 1.0 と LangChain 1.0 を軸に体系化して解説します。
+  章ごとに入門からプロトタイプ、運用まで段階的に学べます。
+# cover-image: images/cover.png  # 用意できたらコメントを外してください。
+subject:
+  - AI
+  - Agents
+  - RAG
+  - LangGraph
+  - LangChain
 
-# EPUB 識別子（必要になったら設定）
-# identifier:
-#   - scheme: ISBN
-#     text: 978-4-00-000000-0
-
-# 表紙画像（images/cover.jpg を用意したらコメントアウトを外す）
-# cover-image: images/cover.jpg

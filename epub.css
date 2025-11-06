@@ -1,93 +1,23 @@
-/*
-  EPUB カスタムスタイル（Kindle/KFX での表示最適化を意識）
-  - 章の改ページ
-  - 両端揃え
-  - コードブロックの読みやすさ
-  - 日本語の改行・句読点ぶら下げのヒント（端末によって挙動は異なる）
-*/
+/* Base typography */
+html, body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif; line-height: 1.7; }
+body { font-size: 0.95rem; }
 
-html, body {
-  margin: 0;
-  padding: 0;
-}
+/* Headings */
+h1 { font-size: 1.6rem; margin-top: 2.2rem; border-bottom: 1px solid #ddd; padding-bottom: .4rem; page-break-before: always; }
+h2 { font-size: 1.3rem; margin-top: 1.6rem; }
+h3 { font-size: 1.1rem; margin-top: 1.2rem; }
 
-body {
-  font-family: -apple-system, system-ui, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-  line-height: 1.8;
-  text-align: justify;             /* 両端揃え */
-  widows: 2;
-  orphans: 2;
-}
+/* Code */
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+pre { background: #f7f7f7; padding: .8rem; border-radius: 6px; overflow: auto; }
 
-/* 日本語向けのヒント（対応は端末依存） */
-body {
-  line-break: strict;
-  word-break: normal;
-  text-spacing: ideograph-alpha;   /* 和欧間のアキ調整 */
-}
+/* Lists */
+ul { margin-left: 1.2rem; }
 
-h1, h2, h3 {
-  font-weight: 700;
-}
+/* Images */
+img { max-width: 100%; height: auto; }
 
-/* 章の開始で改ページ（対応端末では有効） */
-h1, h2 {
-  page-break-before: always;
-  break-before: page;
-}
-
-/* 目次の見やすさ */
-nav[epub|type~="toc"] ol {
-  list-style: none;
-  padding-left: 0;
-}
-
-p {
-  margin: 0 0 0.8em 0; /* 行送りを意識した控えめの段落間隔 */
-}
-
-em, i { font-style: italic; }
-strong, b { font-weight: 700; }
-
-code, pre, kbd, samp {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
-pre code {
-  white-space: pre-wrap; /* スクリーン幅にフィット */
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 0.8em auto;
-}
-
-figure { margin: 0; }
-figcaption {
-  font-size: 0.9em;
-  color: #555;
-  text-align: center;
-}
-
-blockquote {
-  margin: 0.8em 1em;
-  color: #444;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th, td {
-  border: 1px solid #ddd;
-  padding: 0.4em 0.6em;
-}
-
-hr {
-  border: none;
-  border-top: 1px solid #ddd;
-  margin: 1.2em 0;
-}
+/* Links */
+a { color: #0366d6; text-decoration: none; }
+a:hover { text-decoration: underline; }
 
