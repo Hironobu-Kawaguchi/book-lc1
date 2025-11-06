@@ -1,0 +1,20 @@
+# Build outputs
+build/
+
+# macOS
+.DS_Store
+
+# Python
+.venv/
+__pycache__/
+
+# Node
+node_modules/
+
+# Editor
+.vscode/
+.idea/
+
+# Misc
+*.log
+

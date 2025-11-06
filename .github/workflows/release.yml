@@ -1,0 +1,40 @@
+name: Release EPUB
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create build directories
+        run: mkdir -p build/sanitized
+
+      - name: Sanitize manuscript (drop TODO lines)
+        shell: bash
+        run: |
+          bash scripts/sanitize_manuscript.sh
+
+      - name: Build EPUB using Pandoc (docker run)
+        run: >-
+          docker run --rm -v "${{ github.workspace }}:/data" -w /data pandoc/core:3.8
+          --from=gfm
+          --standalone
+          --metadata-file=metadata.yml
+          --output=build/book.epub
+          --toc
+          --css=epub.css
+          --syntax-highlighting=kate
+          build/sanitized/*.md
+
+      - name: Upload Release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/book.epub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
