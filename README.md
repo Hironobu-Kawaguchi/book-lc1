@@ -37,7 +37,7 @@ make build
 bash scripts/sanitize_manuscript.sh
 pandoc --from=gfm --standalone \
   --metadata-file=metadata.yml --css=epub.css \
-  --syntax-highlighting=kate --toc -o build/book.epub build/sanitized/*.md
+  --highlight-style=kate --toc -o build/book.epub build/sanitized/*.md
 ```
 
 ## チュートリアルコードの環境（uv）
